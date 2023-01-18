@@ -1,4 +1,4 @@
-package com.ola.spring.app;
+package com.ola.spring.app.dto;
 
 import lombok.Data;
 
