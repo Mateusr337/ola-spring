@@ -1,8 +1,10 @@
 package com.ola.spring.app.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,8 +41,8 @@ public class AppController {
     @PostMapping("/cars")
     public Car post (@RequestBody @Valid CarDto carDto) {
         log.info("Received new car request, model: {}", carDto.getModelo());
-        log.info("Saiving car: {} ...", carDto.getModelo());
         Car car = new Car(carDto);
+        log.info("Saiving car: {} ...", carDto.getModelo());
         return repository.save(car);
     }
 
@@ -49,6 +51,20 @@ public class AppController {
         log.info("Received update car request, id: {}", id);
         Car car = new Car(carDto);
         car.setId(id);
+        log.info("Updating car with id: {} ...", id);
         return repository.save(car);
     }
-}
+
+    @DeleteMapping("/cars/{id}")
+    public void delete (@PathVariable Long id) throws Exception {
+        log.info("Received delete car request, id: {}", id);
+        log.info("Validating car id {} ...", id);
+        Optional<Car> car = repository.findById(id);
+        if (car.isPresent()) {
+            log.info("Deleting car with id {} ...", id);
+            repository.delete(car.get());
+        }
+        log.error("Not found id {}", id);
+        throw new Exception("Not found car id " + id);
+    }
+ }
